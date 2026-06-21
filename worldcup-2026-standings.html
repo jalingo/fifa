@@ -28,11 +28,17 @@
     font-weight:700;text-transform:uppercase;letter-spacing:.4px}
   .sep{width:1px;height:24px;background:var(--border);margin:0 3px}
   .flash{font-size:12px;color:var(--q1);font-weight:700}
-  #statusbar{padding:2px 26px 6px;color:var(--muted);font-size:12px;display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline}
-  #statusbar b{color:#cdd6e6}
-  #view{font-weight:700;color:#cdd6e6}
-  #events{color:var(--muted)}
+  .upd{font-size:12px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:5px}
+  .upd .ok{color:var(--q1);font-weight:800} .upd .bad{color:#ff6b6b;font-weight:800}
+  .upd .errlink{color:#ff8e8e;text-decoration:underline;cursor:pointer}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid #34507e;border-top-color:#5b8bff;
+    border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
+  #statusbar{padding:2px 26px 4px;color:var(--muted);font-size:12px;display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline}
+  #statusbar b{color:#cdd6e6} #view{font-weight:700;color:#cdd6e6}
+  .abbr{padding:2px 26px 6px;color:var(--muted);font-size:11.5px;display:flex;flex-wrap:wrap;gap:3px 14px}
+  .abbr span b{color:#cdd6e6;font-weight:700}
   .legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:12px;padding:2px 26px 6px}
   .legend .it{display:flex;align-items:center;gap:6px}
   .chip{width:12px;height:12px;border-radius:3px;display:inline-block}
@@ -42,37 +48,27 @@
   .gtitle{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 6px}
   .gtitle b{font-size:15px} .gtitle .gp{font-size:11px;color:var(--muted)}
   table{width:100%;border-collapse:collapse}
-  th{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;
-    padding:2px 2px;text-align:center}
+  th{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:2px 2px;text-align:center}
   th.tn{text-align:left} td{padding:2px 2px;text-align:center;font-size:13px}
   th.auto{color:#7f93c8}
-  td.pos{color:var(--muted);width:16px}
-  td.tn{text-align:left}
-  .name{background:transparent;border:none;color:var(--ink);font:inherit;font-weight:600;
-    width:100%;min-width:58px;padding:2px 2px;border-radius:4px}
+  td.pos{color:var(--muted);width:16px} td.tn{text-align:left}
+  .name{background:transparent;border:none;color:var(--ink);font:inherit;font-weight:600;width:100%;min-width:58px;padding:2px 2px;border-radius:4px}
   .name:focus{background:var(--field);outline:1px solid var(--border)}
-  input.num{width:30px;background:var(--field);border:1px solid var(--border);color:var(--ink);
-    font:inherit;font-size:12px;text-align:center;border-radius:5px;padding:3px 1px;-moz-appearance:textfield}
+  input.num{width:30px;background:var(--field);border:1px solid var(--border);color:var(--ink);font:inherit;font-size:12px;
+    text-align:center;border-radius:5px;padding:3px 1px;-moz-appearance:textfield}
   input.num::-webkit-outer-spin-button,input.num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   input.num:focus{outline:1px solid var(--q2)}
   input.num.warn{outline:1px solid #c9892a;background:#2a1f0c;color:#ffd9a3}
   td.der{color:var(--muted);font-variant-numeric:tabular-nums;background:rgba(255,255,255,.03)}
   td.pts{font-weight:800;color:#fff;background:rgba(47,109,246,.14)}
-  tr.q1 .pos{color:var(--q1);font-weight:800}
-  tr.q2 .pos{color:var(--q2);font-weight:800}
-  tr.q3 .pos{color:var(--third);font-weight:800}
-  tr.q1 td.tn{box-shadow:inset 3px 0 0 var(--q1)}
-  tr.q2 td.tn{box-shadow:inset 3px 0 0 var(--q2)}
-  tr.q3 td.tn{box-shadow:inset 3px 0 0 var(--third)}
+  tr.q1 .pos{color:var(--q1);font-weight:800} tr.q2 .pos{color:var(--q2);font-weight:800} tr.q3 .pos{color:var(--third);font-weight:800}
+  tr.q1 td.tn{box-shadow:inset 3px 0 0 var(--q1)} tr.q2 td.tn{box-shadow:inset 3px 0 0 var(--q2)} tr.q3 td.tn{box-shadow:inset 3px 0 0 var(--third)}
 
   .panel{margin:16px 26px 40px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px 16px}
-  .panel h2{font-size:15px;margin:0 0 4px}
-  .panel p{color:var(--muted);font-size:12px;margin:0 0 10px}
-  table.race{width:100%}
-  table.race th,table.race td{text-align:center;padding:4px 6px;font-size:12.5px}
+  .panel h2{font-size:15px;margin:0 0 4px} .panel p{color:var(--muted);font-size:12px;margin:0 0 10px}
+  table.race{width:100%} table.race th,table.race td{text-align:center;padding:4px 6px;font-size:12.5px}
   table.race td.tn{text-align:left;font-weight:600}
-  tr.qual{background:rgba(25,181,98,.12)}
-  tr.qual td.st{color:var(--q1);font-weight:800}
+  tr.qual{background:rgba(25,181,98,.12)} tr.qual td.st{color:var(--q1);font-weight:800}
   tr.cut td{color:var(--out)} tr.cut td.st{color:#7a4b4b;font-weight:700}
   .divider td{padding:0;border-top:2px dashed #4a3a16;height:0}
   .note{color:var(--muted);font-size:11.5px;margin-top:10px;border-left:3px solid var(--third);padding-left:10px}
@@ -81,18 +77,23 @@
 <body>
 <header>
   <h1>2026 World Cup — Group Standings <span style="color:var(--muted);font-size:14px">· editable simulator</span></h1>
-  <div class="sub">Edit the <b>Pld / W / D / L / GF / GA</b> cells (and names) — <b>GD</b> &amp; <b>Pts</b> auto-compute and groups
-  re-sort live. Everything is a single <b>“Reset to…”</b> concept: jump to a <b>dated snapshot</b> (paging through the
-  tournament as results came in), to a <b>blank</b> slate, or to one of your own <b>saved scenarios</b> — and <b>Save</b> the
-  current state under a label.</div>
+  <div class="sub">Edit <b>Pld / W / D / L / GF / GA</b> (and names) — <b>GD</b> &amp; <b>Pts</b> auto-compute, groups re-sort live.
+  One <b>“Reset to…”</b> concept jumps to a dated snapshot, a blank slate, the live current results, or a saved scenario.
+  Picking <b>Current</b> also fires a background fetch of the latest scores.</div>
 </header>
+
+<div class="abbr" id="abbr">
+  <span><b>Pld</b> played</span><span><b>W</b> won</span><span><b>D</b> drawn</span><span><b>L</b> lost</span>
+  <span><b>GF</b> goals for</span><span><b>GA</b> goals against</span><span><b>GD</b> goal difference</span>
+  <span><b>Pts</b> points (3 win · 1 draw)</span><span><b>MEX/CAN/USA</b> host nations</span>
+</div>
 
 <div class="bar">
   <label class="ctl">Reset&nbsp;to
     <select id="resetSel" onchange="onReset(this.value)">
       <option value="" disabled selected>choose…</option>
       <optgroup label="Snapshot">
-        <option value="cur">Current (latest results)</option>
+        <option value="cur">Current (fetch latest)</option>
         <option value="zero">Blank — 0·0, pre-tournament</option>
       </optgroup>
       <optgroup label="By date (results in)" id="dateOpts"></optgroup>
@@ -104,7 +105,8 @@
   <button onclick="saveState()">Save</button>
   <button class="ghost" onclick="deleteSaved()" title="Delete the saved scenario whose name is in the box">🗑</button>
   <span class="sep"></span>
-  <button class="brk" onclick="openBracket()">→ open bracket with these standings</button>
+  <button class="brk" onclick="openBracket()">→ generate bracket with these standings</button>
+  <span class="upd" id="upd"></span>
   <span class="flash" id="flash"></span>
 </div>
 
@@ -114,7 +116,7 @@
 </div>
 
 <div class="legend">
-  <div class="it"><span class="chip" style="background:var(--q1)"></span> 1st — qualifies (group winner)</div>
+  <div class="it"><span class="chip" style="background:var(--q1)"></span> 1st — qualifies (winner)</div>
   <div class="it"><span class="chip" style="background:var(--q2)"></span> 2nd — qualifies (runner-up)</div>
   <div class="it"><span class="chip" style="background:var(--third)"></span> 3rd — into the 3rd-place race</div>
   <div class="it"><span class="chip" style="background:var(--out)"></span> 4th — eliminated</div>
@@ -132,132 +134,112 @@
   equal footing yet. The real cut is computed only after all 12 groups finish 3 matches.</div>
 </div>
 
+<script src="wc-core.js"></script>
 <script>
-/* ===================== source of truth: teams + dated match results ===================== */
-const TEAMS = [
- {g:"A",teams:[{n:"Mexico",host:"MEX"},{n:"South Korea"},{n:"Czechia"},{n:"South Africa"}]},
- {g:"B",teams:[{n:"Canada",host:"CAN"},{n:"Switzerland"},{n:"Bosnia & Herz."},{n:"Qatar"}]},
- {g:"C",teams:[{n:"Brazil"},{n:"Morocco"},{n:"Scotland"},{n:"Haiti"}]},
- {g:"D",teams:[{n:"United States",host:"USA"},{n:"Australia"},{n:"Paraguay"},{n:"Türkiye"}]},
- {g:"E",teams:[{n:"Germany"},{n:"Ivory Coast"},{n:"Ecuador"},{n:"Curaçao"}]},
- {g:"F",teams:[{n:"Sweden"},{n:"Japan"},{n:"Netherlands"},{n:"Tunisia"}]},
- {g:"G",teams:[{n:"New Zealand"},{n:"Iran"},{n:"Egypt"},{n:"Belgium"}]},
- {g:"H",teams:[{n:"Saudi Arabia"},{n:"Uruguay"},{n:"Spain"},{n:"Cape Verde"}]},
- {g:"I",teams:[{n:"Norway"},{n:"France"},{n:"Senegal"},{n:"Iraq"}]},
- {g:"J",teams:[{n:"Argentina"},{n:"Austria"},{n:"Jordan"},{n:"Algeria"}]},
- {g:"K",teams:[{n:"Colombia"},{n:"DR Congo"},{n:"Portugal"},{n:"Uzbekistan"}]},
- {g:"L",teams:[{n:"England"},{n:"Ghana"},{n:"Panama"},{n:"Croatia"}]},
-];
-// each event: d=date, g=group, h=home, a=away, hs=home score, as=away score
-const EVENTS = [
- {d:"2026-06-11",g:"A",h:"Mexico",a:"South Africa",hs:2,as:0},
- {d:"2026-06-11",g:"A",h:"South Korea",a:"Czechia",hs:2,as:1},
- {d:"2026-06-12",g:"B",h:"Canada",a:"Bosnia & Herz.",hs:1,as:1},
- {d:"2026-06-12",g:"D",h:"United States",a:"Paraguay",hs:4,as:1},
- {d:"2026-06-13",g:"B",h:"Qatar",a:"Switzerland",hs:1,as:1},
- {d:"2026-06-13",g:"C",h:"Brazil",a:"Morocco",hs:1,as:1},
- {d:"2026-06-13",g:"C",h:"Haiti",a:"Scotland",hs:0,as:1},
- {d:"2026-06-13",g:"D",h:"Australia",a:"Türkiye",hs:2,as:0},
- {d:"2026-06-14",g:"E",h:"Germany",a:"Curaçao",hs:7,as:1},
- {d:"2026-06-14",g:"E",h:"Ivory Coast",a:"Ecuador",hs:1,as:0},
- {d:"2026-06-14",g:"F",h:"Netherlands",a:"Japan",hs:2,as:2},
- {d:"2026-06-14",g:"F",h:"Sweden",a:"Tunisia",hs:5,as:1},
- {d:"2026-06-15",g:"G",h:"Belgium",a:"Egypt",hs:1,as:1},
- {d:"2026-06-15",g:"G",h:"Iran",a:"New Zealand",hs:2,as:2},
- {d:"2026-06-15",g:"H",h:"Spain",a:"Cape Verde",hs:0,as:0},
- {d:"2026-06-15",g:"H",h:"Saudi Arabia",a:"Uruguay",hs:1,as:1},
- {d:"2026-06-16",g:"I",h:"France",a:"Senegal",hs:3,as:1},
- {d:"2026-06-16",g:"I",h:"Iraq",a:"Norway",hs:1,as:4},
- {d:"2026-06-16",g:"J",h:"Argentina",a:"Algeria",hs:3,as:0},
- {d:"2026-06-16",g:"J",h:"Austria",a:"Jordan",hs:3,as:1},
- {d:"2026-06-17",g:"K",h:"Portugal",a:"DR Congo",hs:1,as:1},
- {d:"2026-06-17",g:"K",h:"Uzbekistan",a:"Colombia",hs:1,as:3},
- {d:"2026-06-17",g:"L",h:"England",a:"Croatia",hs:4,as:2},
- {d:"2026-06-17",g:"L",h:"Ghana",a:"Panama",hs:1,as:0},
- {d:"2026-06-18",g:"A",h:"Czechia",a:"South Africa",hs:1,as:1},
- {d:"2026-06-18",g:"A",h:"Mexico",a:"South Korea",hs:1,as:0},
- {d:"2026-06-18",g:"B",h:"Switzerland",a:"Bosnia & Herz.",hs:4,as:1},
- {d:"2026-06-18",g:"B",h:"Canada",a:"Qatar",hs:6,as:0},
- {d:"2026-06-19",g:"C",h:"Scotland",a:"Morocco",hs:0,as:1},
- {d:"2026-06-19",g:"C",h:"Brazil",a:"Haiti",hs:3,as:0},
- {d:"2026-06-19",g:"D",h:"United States",a:"Australia",hs:2,as:0},
- {d:"2026-06-19",g:"D",h:"Türkiye",a:"Paraguay",hs:0,as:1},
- {d:"2026-06-20",g:"E",h:"Germany",a:"Ivory Coast",hs:2,as:1},
- {d:"2026-06-20",g:"E",h:"Ecuador",a:"Curaçao",hs:0,as:0},
- {d:"2026-06-20",g:"F",h:"Netherlands",a:"Sweden",hs:5,as:1},
- {d:"2026-06-20",g:"F",h:"Tunisia",a:"Japan",hs:0,as:4},
-];
-const MONTH = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const fmtDate = iso => { const [y,m,d]=iso.split('-'); return MONTH[+m]+' '+(+d); };
-const DATES = [...new Set(EVENTS.map(e=>e.d))].sort();      // distinct match days, ascending
-const LATEST = DATES[DATES.length-1];
+const W = window.WC;
+if (!W) { document.body.innerHTML = '<p style="color:#fff;padding:30px;font:16px sans-serif">Could not load <code>wc-core.js</code> — keep it in the same folder as this file.</p>'; }
+else {
+const { buildState, cmp, sortGroups, P, GD, PTS, fmtGD, esc } = W;
+const MONTH=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtDate=iso=>{const[y,m,d]=iso.split('-');return MONTH[+m]+' '+(+d);};
 
-/* ===================== compute a standings snapshot from the events ===================== */
-// cutoff: 'ZERO' = no games | 'ALL' = every result | an ISO date = results on/before that date
-function buildState(cutoff){
-  const st = TEAMS.map(grp=>({g:grp.g, teams:grp.teams.map(t=>({n:t.n,host:t.host,p:0,w:0,d:0,l:0,gf:0,ga:0}))}));
-  if(cutoff==='ZERO') return st;
-  const idx={}; st.forEach(grp=>grp.teams.forEach(t=>idx[grp.g+'|'+t.n]=t));
-  EVENTS.forEach(ev=>{
-    if(cutoff!=='ALL' && ev.d>cutoff) return;              // ISO dates compare correctly as strings
-    const h=idx[ev.g+'|'+ev.h], a=idx[ev.g+'|'+ev.a]; if(!h||!a) return;
-    h.gf+=ev.hs; h.ga+=ev.as; a.gf+=ev.as; a.ga+=ev.hs; h.p++; a.p++;
-    if(ev.hs>ev.as){h.w++; a.l++;} else if(ev.hs<ev.as){h.l++; a.w++;} else {h.d++; a.d++;}
-  });
-  return st;
-}
+/* ---------- persistence keys ---------- */
+const K_SAVED='wc2026-saved-v1', K_EVENTS='wc2026-events-v1', K_FETCH='wc2026-lastfetch-v1';
+const jget=(k,f)=>{ try{ const s=localStorage.getItem(k); return s?JSON.parse(s):f; }catch(e){ return f; } };
+const jset=(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
 
-/* ===================== shared helpers ===================== */
-const P = t => (t.p!=null ? t.p : t.w+t.d+t.l);
-const GD = t => (t.gf-t.ga);
-const PTS = t => (3*t.w+t.d);
-const fmtGD = v => v>0?('+'+v):(''+v);
-const cmp = (a,b) => PTS(b)-PTS(a) || GD(b)-GD(a) || b.gf-a.gf || a.n.localeCompare(b.n);
-function sortGroups(){ state.forEach(grp=>grp.teams.sort(cmp)); }
+/* ---------- mutable state ---------- */
+let events = (()=>{ const a=jget(K_EVENTS,null); return (Array.isArray(a)&&a.length)?a:W.EVENTS; })();
+let saved  = jget(K_SAVED,{}) || {};
+let lastFetchMs = jget(K_FETCH,null);
+let state, view, cutoff, edited=false, updating=false, lastErrLong='';
 
-/* ===================== state + "reset to" + save ===================== */
-const SAVED_KEY='wc2026-saved-v1';
-let saved = (()=>{ try{ return JSON.parse(localStorage.getItem(SAVED_KEY))||{}; }catch(e){ return {}; } })();
-let state, view, cutoff, edited=false;
+const curLabel = ()=>'Current — after '+fmtDate(W.latestDate(events));
+function applySnapshot(c,label){ state=buildState(c,events); cutoff=c; view=label; edited=false; render(); }
 
-function applySnapshot(c, label){ state = buildState(c); cutoff=c; view=label; edited=false; render(); }
-
+/* ---------- "Reset to…" ---------- */
 function onReset(val){
   if(!val) return;
-  if(val==='cur')       applySnapshot('ALL',  'Current — after '+fmtDate(LATEST));
-  else if(val==='zero') applySnapshot('ZERO', 'Blank (pre-tournament)');
-  else if(val.startsWith('date:')){ const d=val.slice(5); applySnapshot(d, 'Results in through '+fmtDate(d)); }
-  else if(val.startsWith('saved:')){ const k=val.slice(6);
-    if(saved[k]){ state=structuredClone(saved[k]); cutoff='SAVED'; view='Saved scenario: “'+k+'”'; edited=false; render(); }
-  }
-  document.getElementById('resetSel').value='';   // revert the menu to its label
+  if(val==='cur'){ applySnapshot('ALL',curLabel()); startUpdate(); }
+  else if(val==='zero') applySnapshot('ZERO','Blank (pre-tournament)');
+  else if(val.startsWith('date:')){ const d=val.slice(5); applySnapshot(d,'Results in through '+fmtDate(d)); }
+  else if(val.startsWith('saved:')){ const k=val.slice(6); if(Object.prototype.hasOwnProperty.call(saved,k)){ state=structuredClone(saved[k]); cutoff='SAVED'; view='Saved scenario: “'+k+'”'; edited=false; render(); } }
+  document.getElementById('resetSel').value='';
 }
 
+/* ---------- save / delete labelled scenarios ---------- */
+const RESERVED=['__proto__','prototype','constructor'];   // guard against prototype-pollution via labels
 function saveState(){
   const inp=document.getElementById('saveInput'), k=inp.value.trim();
   if(!k){ flash('Type a label first',true); inp.focus(); return; }
-  saved[k]=structuredClone(state); persistSaved(); refreshSaved();
-  inp.value=''; flash('Saved “'+k+'”');
+  if(RESERVED.includes(k)){ flash('Reserved name — pick another',true); return; }
+  saved[k]=structuredClone(state); jset(K_SAVED,saved); refreshSaved(); inp.value=''; flash('Saved “'+k+'”');
 }
 function deleteSaved(){
   const inp=document.getElementById('saveInput'), k=inp.value.trim();
-  if(k && saved[k]){ delete saved[k]; persistSaved(); refreshSaved(); inp.value=''; flash('Deleted “'+k+'”'); }
+  if(k && Object.prototype.hasOwnProperty.call(saved,k)){ delete saved[k]; jset(K_SAVED,saved); refreshSaved(); inp.value=''; flash('Deleted “'+k+'”'); }
   else flash('No saved scenario named that',true);
 }
-function persistSaved(){ try{ localStorage.setItem(SAVED_KEY, JSON.stringify(saved)); }catch(e){} }
 function refreshSaved(){
-  const og=document.getElementById('savedOpts');
-  const keys=Object.keys(saved);
-  og.innerHTML = keys.length ? keys.map(k=>`<option value="saved:${k.replace(/"/g,'&quot;')}">${k}</option>`).join('')
-                             : `<option value="" disabled>(none yet)</option>`;
+  const og=document.getElementById('savedOpts'), keys=Object.keys(saved);
+  og.innerHTML = keys.length ? keys.map(k=>`<option value="saved:${esc(k)}">${esc(k)}</option>`).join('') : `<option value="" disabled>(none yet)</option>`;
 }
 let flashT;
 function flash(msg,warn){ const f=document.getElementById('flash'); f.textContent=msg; f.style.color=warn?'#e0a020':'var(--q1)';
   clearTimeout(flashT); flashT=setTimeout(()=>{f.textContent='';},2600); }
 
-/* ===================== render ===================== */
+/* ---------- live update (guarded, async, with retries) ---------- */
+function setUpd(kind,extra){
+  const el=document.getElementById('upd'); let h='';
+  if(kind==='idle')         h=`<span style="opacity:.7">tip: Reset → Current to fetch live scores</span>`;
+  else if(kind==='checking')h=`<span class="spin"></span> checking for new results…`;
+  else if(kind==='fetching')h=`<span class="spin"></span> fetching latest results…`;
+  else if(kind==='updated') h=`<span class="ok">✓</span> updated${extra?` (${extra} new)`:''}`;
+  else if(kind==='current') h=`<span class="ok">✓</span> ${esc(extra||'up to date')}`;
+  else if(kind==='error')   h=`<span class="bad">✕</span> <a href="#" class="errlink" onclick="copyErr(event)" title="click to copy the full technical error">${esc(extra||'failed')}</a>`;
+  el.innerHTML=h;
+}
+function guardMsg(r){ return r==='no-new-games'?'up to date (no new games)':r==='throttled'?'up to date (just checked)':r==='no-more-matches'?'group stage complete':'up to date'; }
+function datesToFetch(serverIso){
+  const latest=W.latestDate(events)||'0000-00-00';
+  let ds=W.SCHEDULE_DATES.filter(d=> d>latest && (serverIso? d<=serverIso : true));
+  if(!serverIso) ds=ds.slice(0,2);
+  return ds.slice(0,6);
+}
+async function startUpdate(){
+  if(updating) return; updating=true;
+  setUpd('checking');
+  try{
+    let serverMs=null;
+    try{ serverMs=await W.getServerTimeMs(); }catch(e){ serverMs=null; }   // authoritative clock; optional
+    const guard=W.shouldFetch({serverNowMs:serverMs, lastFetchMs, latestResultDate:W.latestDate(events), scheduleDates:W.SCHEDULE_DATES, minIntervalMs:60000});
+    if(!guard.fetch){ setUpd('current',guardMsg(guard.reason)); updating=false; return; }
+    setUpd('fetching');
+    const serverIso = serverMs ? new Date(serverMs).toISOString().slice(0,10) : null;
+    const fetched=await W.withRetry(()=>W.fetchResults(datesToFetch(serverIso)), {retries:2, baseDelay:600});
+    const merged=W.mergeEvents(events,fetched);
+    if(serverMs){ lastFetchMs=serverMs; jset(K_FETCH,serverMs); }            // never store local clock
+    if(merged.changed){
+      events=merged.events; jset(K_EVENTS,events); buildDateOptions();
+      setUpd('updated', merged.added+merged.updated);
+      if(!edited && cutoff==='ALL'){ applySnapshot('ALL',curLabel()); setUpd('updated', merged.added+merged.updated); }
+    } else setUpd('current','up to date');
+  }catch(e){ const f=W.formatError(e); lastErrLong=f.long; setUpd('error',f.short); }
+  finally{ updating=false; }
+}
+function copyErr(e){ e.preventDefault(); copyText(lastErrLong||'(no detail)'); flash('error details copied'); }
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t)); }
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta);
+}
+
+/* ---------- render ---------- */
 function render(){
-  sortGroups();
+  sortGroups(state);
   const root=document.getElementById('groups'); root.innerHTML='';
   state.forEach((grp,gi)=>{
     const card=document.createElement('div'); card.className='gcard';
@@ -265,21 +247,21 @@ function render(){
     let rows='';
     grp.teams.forEach((t,ti)=>{
       const qcls=ti===0?'q1':ti===1?'q2':ti===2?'q3':'';
-      const host=t.host?` <span style="font-size:9px;font-weight:800;color:#04130b;background:#19b562;border-radius:4px;padding:0 4px">${t.host}</span>`:'';
-      const bad=t.p!==t.w+t.d+t.l;
+      const host=t.host?` <span style="font-size:9px;font-weight:800;color:#04130b;background:#19b562;border-radius:4px;padding:0 4px">${esc(t.host)}</span>`:'';
+      const bad=W.num(t.p)!==W.num(t.w)+W.num(t.d)+W.num(t.l);
       rows+=`<tr class="${qcls}">
         <td class="pos">${ti+1}</td>
-        <td class="tn"><input class="name" value="${t.n.replace(/"/g,'&quot;')}" data-g="${gi}" data-i="${ti}" data-f="n">${host}</td>
-        <td><input class="num${bad?' warn':''}"${bad?' title="Played ≠ W+D+L"':''} type="number" min="0" value="${t.p}" data-g="${gi}" data-i="${ti}" data-f="p"></td>
-        <td><input class="num" type="number" min="0" value="${t.w}" data-g="${gi}" data-i="${ti}" data-f="w"></td>
-        <td><input class="num" type="number" min="0" value="${t.d}" data-g="${gi}" data-i="${ti}" data-f="d"></td>
-        <td><input class="num" type="number" min="0" value="${t.l}" data-g="${gi}" data-i="${ti}" data-f="l"></td>
-        <td><input class="num" type="number" min="0" value="${t.gf}" data-g="${gi}" data-i="${ti}" data-f="gf"></td>
-        <td><input class="num" type="number" min="0" value="${t.ga}" data-g="${gi}" data-i="${ti}" data-f="ga"></td>
+        <td class="tn"><input class="name" value="${esc(t.n)}" data-g="${gi}" data-i="${ti}" data-f="n">${host}</td>
+        <td><input class="num${bad?' warn':''}"${bad?' title="Played ≠ W+D+L"':''} type="number" min="0" value="${W.num(t.p)}" data-g="${gi}" data-i="${ti}" data-f="p"></td>
+        <td><input class="num" type="number" min="0" value="${W.num(t.w)}" data-g="${gi}" data-i="${ti}" data-f="w"></td>
+        <td><input class="num" type="number" min="0" value="${W.num(t.d)}" data-g="${gi}" data-i="${ti}" data-f="d"></td>
+        <td><input class="num" type="number" min="0" value="${W.num(t.l)}" data-g="${gi}" data-i="${ti}" data-f="l"></td>
+        <td><input class="num" type="number" min="0" value="${W.num(t.gf)}" data-g="${gi}" data-i="${ti}" data-f="gf"></td>
+        <td><input class="num" type="number" min="0" value="${W.num(t.ga)}" data-g="${gi}" data-i="${ti}" data-f="ga"></td>
         <td class="der c-gd">${fmtGD(GD(t))}</td>
         <td class="pts c-pts">${PTS(t)}</td></tr>`;
     });
-    card.innerHTML=`<div class="gtitle"><b>Group ${grp.g}</b><span class="gp">${maxP} of 3 played</span></div>
+    card.innerHTML=`<div class="gtitle"><b>Group ${esc(grp.g)}</b><span class="gp">${maxP} of 3 played</span></div>
       <table><thead><tr>
         <th>#</th><th class="tn">Team</th><th>Pld</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th class="auto">GD</th><th class="auto">Pts</th>
       </tr></thead><tbody>${rows}</tbody></table>`;
@@ -287,15 +269,14 @@ function render(){
   });
   wire(); renderRace(); renderStatus();
 }
-
 function wire(){
   document.querySelectorAll('input.num').forEach(inp=>{
     inp.oninput=e=>{
       const tr=e.target.closest('tr'), f=e.target.dataset.f;
-      const get=k=>Math.max(0,Math.floor(+tr.querySelector(`[data-f="${k}"]`).value||0));
+      const get=k=>W.num(tr.querySelector(`[data-f="${k}"]`).value);
       const w=get('w'),d=get('d'),l=get('l'),gf=get('gf');
       const pInp=tr.querySelector('[data-f="p"]');
-      if(f==='w'||f==='d'||f==='l') pInp.value=w+d+l;     // editing a result re-syncs Played
+      if(f==='w'||f==='d'||f==='l') pInp.value=w+d+l;          // editing a result re-syncs Played
       const p=get('p');
       tr.querySelector('.c-gd').textContent=fmtGD(gf-get('ga'));
       tr.querySelector('.c-pts').textContent=3*w+d;
@@ -305,52 +286,55 @@ function wire(){
   });
   document.querySelectorAll('input.name').forEach(inp=>{ inp.onchange=commit; });
 }
-
 function commit(e){
   const tr=e.target.closest('tr'), g=+e.target.dataset.g, i=+e.target.dataset.i, t=state[g].teams[i];
-  const nameInp=tr.querySelector('.name'); if(nameInp) t.n=nameInp.value.trim()||'?';
-  ['p','w','d','l','gf','ga'].forEach(f=>{ const el=tr.querySelector(`[data-f="${f}"]`); if(el) t[f]=Math.max(0,Math.floor(+el.value||0)); });
+  const nameInp=tr.querySelector('.name'); if(nameInp) t.n=nameInp.value.trim().slice(0,40)||'?';
+  ['p','w','d','l','gf','ga'].forEach(f=>{ const el=tr.querySelector(`[data-f="${f}"]`); if(el) t[f]=W.num(el.value); });
   edited=true; render();
 }
-
 function renderRace(){
-  const thirds=state.map(grp=>({g:grp.g, ...grp.teams[2]})); thirds.sort(cmp);
+  const thirds=state.map(grp=>Object.assign({g:grp.g},grp.teams[2])); thirds.sort(cmp);
   const body=document.getElementById('raceBody'); body.innerHTML='';
   thirds.forEach((t,idx)=>{
     if(idx===8) body.insertAdjacentHTML('beforeend','<tr class="divider"><td colspan="12"></td></tr>');
     const q=idx<8;
     body.insertAdjacentHTML('beforeend',`<tr class="${q?'qual':'cut'}">
-      <td>${idx+1}</td><td>${t.g}</td><td class="tn">${t.n}</td>
-      <td>${P(t)}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
-      <td>${t.gf}</td><td>${t.ga}</td><td>${fmtGD(GD(t))}</td><td><b>${PTS(t)}</b></td>
+      <td>${idx+1}</td><td>${esc(t.g)}</td><td class="tn">${esc(t.n)}</td>
+      <td>${P(t)}</td><td>${W.num(t.w)}</td><td>${W.num(t.d)}</td><td>${W.num(t.l)}</td>
+      <td>${W.num(t.gf)}</td><td>${W.num(t.ga)}</td><td>${fmtGD(GD(t))}</td><td><b>${PTS(t)}</b></td>
       <td class="st">${q?'✓ R32':'✕ out'}</td></tr>`);
   });
 }
-
 function renderStatus(){
-  document.getElementById('view').textContent = view + (edited?'  ·  edited':'');
+  document.getElementById('view').textContent=view+(edited?'  ·  edited':'');
   const evEl=document.getElementById('events');
-  if(cutoff==='ZERO' || cutoff==='SAVED'){ evEl.textContent=''; return; }
+  if(cutoff==='ZERO'||cutoff==='SAVED'){ evEl.textContent=''; return; }
   const cut = cutoff==='ALL' ? '9999-99-99' : cutoff;
-  const days = DATES.filter(d=>d<=cut);
-  const newest = days[days.length-1];
+  const days=[...new Set(events.map(e=>e.d))].sort().filter(d=>d<=cut);
+  const newest=days[days.length-1];
   if(!newest){ evEl.textContent=''; return; }
-  const ms = EVENTS.filter(e=>e.d===newest).map(m=>`${m.h} ${m.hs}–${m.as} ${m.a}`);
-  evEl.innerHTML = `<b>Results on ${fmtDate(newest)}:</b> ` + ms.join('   ·   ');
+  const ms=events.filter(e=>e.d===newest).map(m=>`${esc(m.h)} ${W.num(m.hs)}–${W.num(m.as)} ${esc(m.a)}`);
+  evEl.innerHTML=`<b>Results on ${esc(fmtDate(newest))}:</b> `+ms.join('   ·   ');
+}
+function buildDateOptions(){
+  const dates=[...new Set(events.map(e=>e.d))].sort();
+  document.getElementById('dateOpts').innerHTML =
+    dates.map(d=>{ const n=events.filter(e=>e.d===d).length; return `<option value="date:${esc(d)}">${esc(fmtDate(d))} — ${n} match${n>1?'es':''}</option>`; }).join('');
 }
 
 /* hand the (sorted) standings to the bracket page via the URL hash */
 function openBracket(){
-  sortGroups();
+  sortGroups(state);
   const url='worldcup-2026-bracket.html#data='+encodeURIComponent(JSON.stringify(state));
   const win=window.open(url,'_blank'); if(!win) location.href=url;
 }
 
-/* ===================== init ===================== */
-document.getElementById('dateOpts').innerHTML =
-  DATES.map(d=>`<option value="date:${d}">${fmtDate(d)} — ${EVENTS.filter(e=>e.d===d).length} match${EVENTS.filter(e=>e.d===d).length>1?'es':''}</option>`).join('');
-refreshSaved();
-applySnapshot('ALL','Current — after '+fmtDate(LATEST));
+/* expose handlers used by inline onclick/onchange */
+Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr});
+
+/* ---------- init ---------- */
+buildDateOptions(); refreshSaved(); applySnapshot('ALL',curLabel()); setUpd('idle');
+}
 </script>
 </body>
 </html>

@@ -10,6 +10,23 @@ Standalone, zero-build HTML tools for understanding and simulating the 2026 FIFA
 | `worldcup-2026-standings.html` | Editable group-standings simulator. Match results are the source of truth; standings snapshots are computed from them. A single **"Reset to…"** control jumps to a blank slate, the current results, any **dated snapshot**, or a **saved scenario** (Save/label your own). Edit `Pld / W / D / L / GF / GA`; `GD` and `Pts` auto-compute and groups re-sort live. Hands the live table to the bracket. |
 | `worldcup-2026-bracket.html` | Round-of-32 → Final bracket with connector arrows, the 3rd-place **eligibility matrix**, and a solver that ranks the 12 third-placed teams, takes the best 8, and slots them into the eight group-winner matches (FIFA Annex-C style). Populates real team names when launched from the standings page. |
 | `worldcup-2026-bracket.mmd` | Mermaid source of the bracket, for rendering in Mermaid-aware tooling. |
+| `wc-core.js` | Shared, dependency-free logic (UMD: browser global `WC` + Node `require`): the data, standings engine, third-place ranking + Annex-C matching solver, and live-update helpers. Single source of truth for both pages and the tests. |
+| `test/wc-core.test.js` | Zero-dependency `node:test` suite for the critical logic + edge/error cases. |
+
+## Live updates
+
+Picking **Reset → Current** also fires a guarded background fetch: it reads an authoritative
+server clock (not your local one), skips the network entirely if no new match has occurred,
+otherwise pulls the latest scores (ESPN's keyless JSON) with retry/backoff and merges them in.
+Status is shown inline (spinner → green check on success, or a tight failure message whose link
+copies the full technical error). All remote data is HTML-escaped before display.
+
+## Tests
+
+```sh
+node --test
+```
+No dependencies required (Node's built-in test runner).
 
 ## How the two pages connect
 

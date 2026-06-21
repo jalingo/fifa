@@ -175,7 +175,14 @@
   Team names (when shown) are populated live from the standings simulator.
 </footer>
 
+<script src="wc-core.js"></script>
 <script>
+const W = window.WC;
+if (!W) { document.body.innerHTML = '<p style="color:#fff;padding:30px;font:16px sans-serif">Could not load <code>wc-core.js</code> — keep it in the same folder as this file.</p>'; }
+else {
+/* shared logic from wc-core.js */
+const { esc, cmp, PTS, GD, P, fmtGD, ELIG, matchWinnerGrp } = W;
+
 /* ============================ structured bracket data ============================ */
 // slot kinds: w=group winner, r=runner-up, t=third place (allow = eligible group letters)
 const R32 = [
@@ -209,60 +216,23 @@ const QF = [
 const SF  = [{n:101,date:"Jul 14 · Arlington",f:[97,98]}, {n:102,date:"Jul 15 · Atlanta",f:[99,100]}];
 const FIN = [{n:104,date:"Jul 19 · MetLife, E. Rutherford",f:[101,102]}];
 
-const ELIG = [
-  {m:74,win:"E",g:"A,B,C,D,F"},{m:77,win:"I",g:"C,D,F,G,H"},{m:79,win:"A",g:"C,E,F,H,I"},
-  {m:80,win:"L",g:"E,H,I,J,K"},{m:81,win:"D",g:"B,E,F,I,J"},{m:82,win:"G",g:"A,E,H,I,J"},
-  {m:85,win:"B",g:"E,F,G,I,J"},{m:87,win:"K",g:"D,E,I,J,L"},
-];
-const matchWinnerGrp = {74:'E',77:'I',79:'A',80:'L',81:'D',82:'G',85:'B',87:'K'};
-
 /* ============================ live data from standings (URL hash) ============================ */
-const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const PTS = t => 3*t.w+t.d, GD = t => t.gf-t.ga, P = t => (t.p!=null ? t.p : t.w+t.d+t.l);
-const fmtGD = v => v>0?('+'+v):(''+v);
-const cmp = (a,b)=> PTS(b)-PTS(a) || GD(b)-GD(a) || b.gf-a.gf || a.n.localeCompare(b.n);
-
 let DATA=null, byGroup=null, assignment=null, ranked=null;
 try{
   const m = location.hash.match(/data=(.*)$/);
-  if(m){ DATA = JSON.parse(decodeURIComponent(m[1])); }
+  if(m){
+    const parsed = JSON.parse(decodeURIComponent(m[1]));
+    // only accept the expected shape (array of {g:string, teams:[]}) — guards against a tampered hash
+    if(Array.isArray(parsed) && parsed.length && parsed.every(g=>g&&typeof g.g==='string'&&Array.isArray(g.teams))) DATA = parsed;
+  }
 }catch(e){ DATA=null; }
 
 if(DATA){
+  const sorted = DATA.map(grp=>({g:grp.g, teams:[...grp.teams].sort(cmp)}));
   byGroup = {};
-  DATA.forEach(grp=>{ const ts=[...grp.teams].sort(cmp); byGroup[grp.g]={w:ts[0],r:ts[1],t:ts[2]}; });
-  // rank the 12 third-placed teams; top 8 qualify
-  const thirds = DATA.map(grp=>({g:grp.g, ...byGroup[grp.g].t}));
-  thirds.sort(cmp);
-  ranked = thirds.map((t,i)=>({...t, rank:i+1, qualified:i<8}));
-  const qualGroups = ranked.filter(t=>t.qualified).map(t=>t.g);
-  assignment = assignThirds(qualGroups);
-}
-
-/* Solve the slot<-group assignment as a bipartite perfect matching (dynamic MRV backtracking). */
-function assignThirds(qualGroups){
-  const slots = ELIG.map(s=>({m:s.m, allow:s.g.split(',')}));
-  const qset = new Set(qualGroups);
-  const used = new Set(), out = {};
-  function solve(remaining){
-    if(remaining.length===0) return true;
-    // pick slot with fewest current candidates (MRV); ties -> original order
-    let best=-1, bestC=null;
-    for(let i=0;i<remaining.length;i++){
-      const c = remaining[i].allow.filter(g=>qset.has(g) && !used.has(g));
-      if(bestC===null || c.length<bestC.length){ best=i; bestC=c; }
-    }
-    if(bestC.length===0) return false;
-    const slot = remaining[best];
-    const rest = remaining.filter((_,i)=>i!==best);
-    for(const g of bestC){
-      used.add(g); out[slot.m]=g;
-      if(solve(rest)) return true;
-      used.delete(g); delete out[slot.m];
-    }
-    return false;
-  }
-  return solve(slots) ? out : null;
+  sorted.forEach(grp=>{ byGroup[grp.g]={w:grp.teams[0],r:grp.teams[1],t:grp.teams[2]}; });
+  ranked = W.rankThirds(sorted);                                   // 12 thirds ranked; top 8 flagged
+  assignment = W.assignThirds(ranked.filter(t=>t.qualified).map(t=>t.g));   // matching solver in wc-core.js
 }
 
 /* ============================ render bracket ============================ */
@@ -354,7 +324,7 @@ window.addEventListener('resize',()=>{clearTimeout(window._t);window._t=setTimeo
 const cols="A,B,C,D,E,F,G,H,I,J,K,L".split(',');
 const eb=document.getElementById('eligbody');
 ELIG.forEach(row=>{
-  const elig=row.g.split(',');
+  const elig=row.allow;
   let tds=`<td class="win">M${row.m} · Winner ${row.win}</td>`;
   cols.forEach(c=>{
     if(c===row.win) tds+=`<td class="own">—</td>`;
@@ -387,8 +357,8 @@ if(DATA){
       else res='→ qualifies';
     } else res='✕ eliminated';
     rows+=`<tr class="${t.qualified?'qual':'cut'}">
-      <td>${i+1}</td><td>${t.g}</td><td class="tn">${esc(t.n)}</td>
-      <td>${P(t)}</td><td>${t.gf}</td><td>${t.ga}</td><td>${fmtGD(GD(t))}</td><td><b>${PTS(t)}</b></td>
+      <td>${i+1}</td><td>${esc(t.g)}</td><td class="tn">${esc(t.n)}</td>
+      <td>${P(t)}</td><td>${W.num(t.gf)}</td><td>${W.num(t.ga)}</td><td>${fmtGD(GD(t))}</td><td><b>${PTS(t)}</b></td>
       <td class="res ${t.qualified?'st':''}">${res}</td></tr>`;
   });
   det.innerHTML = `<h2>3rd-place determination — from your current standings</h2>
@@ -398,6 +368,7 @@ if(DATA){
       <th>#</th><th>Grp</th><th>3rd-placed team</th><th>Pld</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Result</th>
     </tr></thead><tbody>${rows}</tbody></table>`;
 }
+} /* end: wc-core.js guard */
 </script>
 </body>
 </html>
