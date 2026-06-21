@@ -1,0 +1,87 @@
+%% 2026 FIFA World Cup — Knockout bracket (48-team format)
+%% Arrows point to where each match winner advances.
+%% Gold nodes = a slot filled by one of the 8 best 3rd-placed teams.
+%% Render with mermaid (flowchart LR). Team names appear after the group stage.
+flowchart LR
+
+  %% ---------- ROUND OF 32 ----------
+  M73["M73<br/>RU A vs RU B"]
+  M74["M74<br/>Win E vs 3rd A/B/C/D/F"]
+  M75["M75<br/>Win F vs RU C"]
+  M76["M76<br/>Win C vs RU F"]
+  M77["M77<br/>Win I vs 3rd C/D/F/G/H"]
+  M78["M78<br/>RU E vs RU I"]
+  M79["M79<br/>Win A (MEX) vs 3rd C/E/F/H/I"]
+  M80["M80<br/>Win L vs 3rd E/H/I/J/K"]
+  M81["M81<br/>Win D (USA) vs 3rd B/E/F/I/J"]
+  M82["M82<br/>Win G vs 3rd A/E/H/I/J"]
+  M83["M83<br/>RU K vs RU L"]
+  M84["M84<br/>Win H vs RU J"]
+  M85["M85<br/>Win B (CAN) vs 3rd E/F/G/I/J"]
+  M86["M86<br/>Win J vs RU H"]
+  M87["M87<br/>Win K vs 3rd D/E/I/J/L"]
+  M88["M88<br/>RU D vs RU G"]
+
+  %% ---------- ROUND OF 16 ----------
+  M89["M89 (R16)"]
+  M90["M90 (R16)"]
+  M91["M91 (R16)"]
+  M92["M92 (R16)"]
+  M93["M93 (R16)"]
+  M94["M94 (R16)"]
+  M95["M95 (R16)"]
+  M96["M96 (R16)"]
+
+  %% ---------- QUARTER-FINALS ----------
+  M97["M97 (QF)"]
+  M98["M98 (QF)"]
+  M99["M99 (QF)"]
+  M100["M100 (QF)"]
+
+  %% ---------- SEMI-FINALS ----------
+  M101["M101 (SF)"]
+  M102["M102 (SF)"]
+
+  %% ---------- FINAL ----------
+  M104(["M104 — FINAL<br/>Jul 19, MetLife"])
+
+  %% ---------- feed edges (winner advances) ----------
+  M74 --> M89
+  M77 --> M89
+  M73 --> M90
+  M75 --> M90
+  M76 --> M91
+  M78 --> M91
+  M79 --> M92
+  M80 --> M92
+  M83 --> M93
+  M84 --> M93
+  M81 --> M94
+  M82 --> M94
+  M86 --> M95
+  M88 --> M95
+  M85 --> M96
+  M87 --> M96
+
+  M89 --> M97
+  M90 --> M97
+  M93 --> M98
+  M94 --> M98
+  M91 --> M99
+  M92 --> M99
+  M95 --> M100
+  M96 --> M100
+
+  M97 --> M101
+  M98 --> M101
+  M99 --> M102
+  M100 --> M102
+
+  M101 --> M104
+  M102 --> M104
+
+  %% ---------- styling ----------
+  classDef third fill:#3a2e10,stroke:#e0a020,stroke-width:2px,color:#ffe6a8;
+  classDef fin fill:#143a23,stroke:#19b562,stroke-width:2px,color:#d8ffe6;
+  class M74,M77,M79,M80,M81,M82,M85,M87 third;
+  class M104 fin;

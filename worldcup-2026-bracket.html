@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 FIFA World Cup — Knockout Bracket (48-team format)</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --ink:#e8edf6; --muted:#93a0b8;
+    --winner:#2f6df6; --runner:#6b7689; --third:#e0a020; --host:#19b562;
+    --line:#3a465f; --card:#1b2438; --border:#2a3550;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{padding:22px 28px 10px}
+  h1{margin:0 0 4px;font-size:22px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:13px;max-width:980px}
+  .wrap{padding:8px 20px 40px;overflow-x:auto}
+  a{color:#5b8bff}
+
+  #banner{margin:10px 28px 0;padding:10px 14px;border-radius:9px;font-size:13px;
+    background:linear-gradient(180deg,#10261a,#13202f);border:1px solid #1f5a3a;color:#cfeede;display:none}
+  #banner.show{display:block}
+  #banner b{color:#fff}
+
+  /* ---- Bracket ---- */
+  #bracket{position:relative;display:flex;gap:46px;min-width:1500px;padding:10px 6px}
+  .round{display:flex;flex-direction:column;justify-content:space-around;flex:1 0 250px}
+  .round.r-final{flex:0 0 250px;justify-content:center}
+  .round.r-sf{flex:0 0 250px}
+  .rhead{position:sticky;top:0;text-align:center;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1.2px;font-size:11px;margin-bottom:6px}
+
+  .match{position:relative;z-index:2;background:var(--card);border:1px solid var(--border);
+    border-radius:9px;padding:8px 10px;margin:7px 0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .match.third{border-color:#5a4716;background:linear-gradient(180deg,#241d0f,#1b2438)}
+  .mno{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:3px;
+    display:flex;justify-content:space-between;align-items:center}
+  .meta{font-size:10px;color:var(--muted);font-weight:500}
+  .slot{display:flex;align-items:center;gap:7px;padding:2px 0;font-size:12.5px}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
+  .dot.w{background:var(--winner)} .dot.r{background:var(--runner)} .dot.t{background:var(--third)}
+  .slot .lab{flex:1}
+  .slot .tag{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.3px}
+  .vs{font-size:9px;color:var(--muted);margin:1px 0 1px 16px}
+  .host{font-size:9px;font-weight:800;color:#04130b;background:var(--host);
+    border-radius:4px;padding:1px 5px;margin-left:4px}
+  .third-tag{color:var(--third);font-weight:600}
+  .named .lab{font-weight:700;color:#fff}
+
+  svg.links{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+  /* ---- Key / legend ---- */
+  .legend{display:flex;flex-wrap:wrap;gap:18px;padding:6px 28px 0;color:var(--muted);font-size:12.5px}
+  .legend .item{display:flex;align-items:center;gap:7px}
+  .key{padding:18px 28px 10px;max-width:1180px}
+  .key h2{font-size:16px;margin:26px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  .key h3{font-size:13.5px;margin:16px 0 6px;color:#cdd6e6}
+  .key p,.key li{color:#c4cde0;font-size:13px}
+  .key ol,.key ul{margin:6px 0 6px 4px;padding-left:20px}
+  .key code{background:#0c1322;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 30px}
+  table.elig{border-collapse:collapse;margin:8px 0;font-size:12px;width:100%}
+  table.elig th,table.elig td{border:1px solid var(--border);padding:5px 7px;text-align:center}
+  table.elig th{background:#10182a;color:var(--muted);font-weight:700}
+  table.elig td.win{text-align:left;white-space:nowrap;font-weight:600}
+  table.elig td.y{background:rgba(224,160,32,.18);color:var(--third);font-weight:800}
+  table.elig td.own{background:#0b0f1a;color:#3a465f}
+  .note{background:#10182a;border:1px solid var(--border);border-left:3px solid var(--third);
+    border-radius:6px;padding:10px 14px;margin:10px 0;color:#c4cde0;font-size:12.5px}
+  .ex{background:#0c1322;border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:8px 0}
+  .ex b{color:#fff}
+
+  /* ---- 3rd-place determination panel (only with live data) ---- */
+  #det{display:none;padding:6px 28px 0;max-width:1180px}
+  #det.show{display:block}
+  #det h2{font-size:16px;margin:22px 0 6px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  #det p{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+  table.det{border-collapse:collapse;width:100%;font-size:12.5px}
+  table.det th,table.det td{border:1px solid var(--border);padding:5px 8px;text-align:center}
+  table.det th{background:#10182a;color:var(--muted)}
+  table.det td.tn{text-align:left;font-weight:700}
+  table.det td.res{text-align:left}
+  tr.qual td{background:rgba(25,181,98,.10)}
+  tr.qual td.st{color:var(--host);font-weight:800}
+  tr.cut td{color:#54627d}
+  .divider td{border-top:2px dashed #4a3a16;height:0;padding:0}
+
+  footer{color:var(--muted);font-size:11px;padding:10px 28px 30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>2026 FIFA World Cup — Knockout Bracket</h1>
+  <div class="sub">First 48-team World Cup (Canada · Mexico · USA). 12 groups of 4 → top 2 of each group (24)
+  <b>plus the 8 best 3rd-placed teams (32)</b> reach a brand-new <b>Round of 32</b>. Arrows show where each match
+  winner advances. Matches in <span class="third-tag">gold</span> are the eight slots filled by a 3rd-placed team —
+  see the Key below for how those are decided. <a href="worldcup-2026-standings.html">← back to standings</a></div>
+</header>
+
+<div id="banner"></div>
+
+<div class="legend">
+  <div class="item"><span class="dot w"></span> Group winner (1st)</div>
+  <div class="item"><span class="dot r"></span> Group runner-up (2nd)</div>
+  <div class="item"><span class="dot t"></span> Best 3rd-placed team (1 of top 8)</div>
+  <div class="item"><span class="host">HOST</span> Host nation</div>
+</div>
+
+<div class="wrap">
+  <div id="bracket"></div>
+</div>
+
+<div id="det"></div>
+
+<div class="key">
+  <h2>Key — how to read it &amp; how the 3rd-place teams are decided</h2>
+
+  <div class="grid2">
+    <div>
+      <h3>1 · Reading a match box</h3>
+      <ul>
+        <li><span class="dot w" style="display:inline-block"></span> <b>Winner Group X</b> — finished 1st in its group.</li>
+        <li><span class="dot r" style="display:inline-block"></span> <b>Runner-up Group X</b> — finished 2nd.</li>
+        <li><span class="dot t" style="display:inline-block"></span> <b>Best 3rd Group A/B/…</b> — one of the 8 qualifying
+            3rd-placed teams; the listed letters are the <i>only</i> groups whose 3rd can land in that slot.</li>
+      </ul>
+      <p>The bracket splits into two halves: the top half (Matches feeding QF 97 &amp; 98) leads to
+      <b>Semi-final 101</b>; the bottom half (QF 99 &amp; 100) leads to <b>Semi-final 102</b>. They only meet in the Final (M104).</p>
+    </div>
+    <div>
+      <h3>2 · Which 3rd-placed teams continue (the calculation)</h3>
+      <p>All <b>12</b> group runners-up auto-qualify; for 3rd place, the <b>12 third-placed teams are ranked against each
+      other</b> in a single table and the <b>top 8 advance</b>. Ranking order:</p>
+      <ol>
+        <li>Most <b>points</b></li>
+        <li>Best <b>goal difference</b></li>
+        <li>Most <b>goals scored</b></li>
+        <li>Best <b>disciplinary / fair-play score</b> (fewest yellow/red-card points)</li>
+        <li><b>FIFA World Ranking</b> at the start of the tournament</li>
+      </ol>
+      <p>The bottom 4 third-placed teams are eliminated. (Head-to-head can't be used — these teams are in different groups.)</p>
+    </div>
+  </div>
+
+  <h2>3 · Assigning the 8 thirds to the 8 winners — the eligibility matrix</h2>
+  <p>Eight group winners (<b>A, B, D, E, G, I, K, L</b>) are each given a 3rd-placed opponent. A winner can <b>never</b>
+  face a 3rd-placer from its <i>own</i> group, so each slot is restricted to 5 possible groups. This matrix is the actual
+  rule behind the “A/B/C/D/F” labels — and the live populator above solves it as a one-to-one matching:</p>
+
+  <table class="elig">
+    <thead>
+      <tr>
+        <th>Match — Winner slot</th>
+        <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th>
+      </tr>
+    </thead>
+    <tbody id="eligbody"></tbody>
+  </table>
+
+  <div class="note">
+    <b>How the exact pairing is picked.</b> Once the group stage ends, FIFA knows <i>which 8 of the 12 groups</i> produced a
+    qualifying 3rd-placed team. That set of 8 group-letters is looked up in <b>Annex C of the competition regulations</b>,
+    which lists all <b>C(12,8) = 495</b> possible combinations and, for each, the one valid way to slot those 8 teams into the
+    8 winners above (a perfect one-to-one matching that respects the matrix and avoids group rematches). This page computes a
+    valid such matching itself — for a given set of qualifying groups it may differ from FIFA’s exact Annex C row, but it
+    always satisfies the same constraints.
+  </div>
+</div>
+
+<footer>
+  Sources: <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_knockout_stage">Wikipedia — 2026 FIFA World Cup knockout stage</a>,
+  FIFA competition regulations (Annex C), ESPN/Sportmonks schedules. Slots/venues per the published match schedule.
+  Team names (when shown) are populated live from the standings simulator.
+</footer>
+
+<script>
+/* ============================ structured bracket data ============================ */
+// slot kinds: w=group winner, r=runner-up, t=third place (allow = eligible group letters)
+const R32 = [
+  {n:74, third:true, date:"Jun 29 · Gillette, Foxborough",    a:{kind:'w',grp:'E'},          b:{kind:'t',m:74,allow:['A','B','C','D','F']}},
+  {n:77, third:true, date:"Jun 30 · MetLife, E. Rutherford",  a:{kind:'w',grp:'I'},          b:{kind:'t',m:77,allow:['C','D','F','G','H']}},
+  {n:73,             date:"Jun 28 · SoFi, Inglewood",         a:{kind:'r',grp:'A'},          b:{kind:'r',grp:'B'}},
+  {n:75,             date:"Jun 29 · Estadio BBVA, Guadalupe", a:{kind:'w',grp:'F'},          b:{kind:'r',grp:'C'}},
+  {n:83,             date:"Jul 2 · BMO Field, Toronto",       a:{kind:'r',grp:'K'},          b:{kind:'r',grp:'L'}},
+  {n:84,             date:"Jul 2 · SoFi, Inglewood",          a:{kind:'w',grp:'H'},          b:{kind:'r',grp:'J'}},
+  {n:81, third:true, date:"Jul 1 · Levi's, Santa Clara",      a:{kind:'w',grp:'D',host:'USA'},b:{kind:'t',m:81,allow:['B','E','F','I','J']}},
+  {n:82, third:true, date:"Jul 1 · Lumen Field, Seattle",     a:{kind:'w',grp:'G'},          b:{kind:'t',m:82,allow:['A','E','H','I','J']}},
+  {n:76,             date:"Jun 29 · NRG, Houston",            a:{kind:'w',grp:'C'},          b:{kind:'r',grp:'F'}},
+  {n:78,             date:"Jun 30 · AT&T, Arlington",         a:{kind:'r',grp:'E'},          b:{kind:'r',grp:'I'}},
+  {n:79, third:true, date:"Jun 30 · Estadio Azteca, Mexico City", a:{kind:'w',grp:'A',host:'MEX'}, b:{kind:'t',m:79,allow:['C','E','F','H','I']}},
+  {n:80, third:true, date:"Jul 1 · Mercedes-Benz, Atlanta",   a:{kind:'w',grp:'L'},          b:{kind:'t',m:80,allow:['E','H','I','J','K']}},
+  {n:86,             date:"Jul 3 · Hard Rock, Miami",         a:{kind:'w',grp:'J'},          b:{kind:'r',grp:'H'}},
+  {n:88,             date:"Jul 3 · AT&T, Arlington",          a:{kind:'r',grp:'D'},          b:{kind:'r',grp:'G'}},
+  {n:85, third:true, date:"Jul 2 · BC Place, Vancouver",      a:{kind:'w',grp:'B',host:'CAN'},b:{kind:'t',m:85,allow:['E','F','G','I','J']}},
+  {n:87, third:true, date:"Jul 3 · Arrowhead, Kansas City",   a:{kind:'w',grp:'K'},          b:{kind:'t',m:87,allow:['D','E','I','J','L']}},
+];
+const R16 = [
+  {n:89,date:"Jul 4 · Philadelphia",f:[74,77]}, {n:90,date:"Jul 4 · Houston",f:[73,75]},
+  {n:93,date:"Jul 6 · Arlington",f:[83,84]},    {n:94,date:"Jul 6 · Seattle",f:[81,82]},
+  {n:91,date:"Jul 5 · E. Rutherford",f:[76,78]},{n:92,date:"Jul 5 · Mexico City",f:[79,80]},
+  {n:95,date:"Jul 7 · Atlanta",f:[86,88]},      {n:96,date:"Jul 7 · Vancouver",f:[85,87]},
+];
+const QF = [
+  {n:97,date:"Jul 9 · Foxborough",f:[89,90]},   {n:98,date:"Jul 10 · Inglewood",f:[93,94]},
+  {n:99,date:"Jul 11 · Miami",f:[91,92]},       {n:100,date:"Jul 11 · Kansas City",f:[95,96]},
+];
+const SF  = [{n:101,date:"Jul 14 · Arlington",f:[97,98]}, {n:102,date:"Jul 15 · Atlanta",f:[99,100]}];
+const FIN = [{n:104,date:"Jul 19 · MetLife, E. Rutherford",f:[101,102]}];
+
+const ELIG = [
+  {m:74,win:"E",g:"A,B,C,D,F"},{m:77,win:"I",g:"C,D,F,G,H"},{m:79,win:"A",g:"C,E,F,H,I"},
+  {m:80,win:"L",g:"E,H,I,J,K"},{m:81,win:"D",g:"B,E,F,I,J"},{m:82,win:"G",g:"A,E,H,I,J"},
+  {m:85,win:"B",g:"E,F,G,I,J"},{m:87,win:"K",g:"D,E,I,J,L"},
+];
+const matchWinnerGrp = {74:'E',77:'I',79:'A',80:'L',81:'D',82:'G',85:'B',87:'K'};
+
+/* ============================ live data from standings (URL hash) ============================ */
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PTS = t => 3*t.w+t.d, GD = t => t.gf-t.ga, P = t => (t.p!=null ? t.p : t.w+t.d+t.l);
+const fmtGD = v => v>0?('+'+v):(''+v);
+const cmp = (a,b)=> PTS(b)-PTS(a) || GD(b)-GD(a) || b.gf-a.gf || a.n.localeCompare(b.n);
+
+let DATA=null, byGroup=null, assignment=null, ranked=null;
+try{
+  const m = location.hash.match(/data=(.*)$/);
+  if(m){ DATA = JSON.parse(decodeURIComponent(m[1])); }
+}catch(e){ DATA=null; }
+
+if(DATA){
+  byGroup = {};
+  DATA.forEach(grp=>{ const ts=[...grp.teams].sort(cmp); byGroup[grp.g]={w:ts[0],r:ts[1],t:ts[2]}; });
+  // rank the 12 third-placed teams; top 8 qualify
+  const thirds = DATA.map(grp=>({g:grp.g, ...byGroup[grp.g].t}));
+  thirds.sort(cmp);
+  ranked = thirds.map((t,i)=>({...t, rank:i+1, qualified:i<8}));
+  const qualGroups = ranked.filter(t=>t.qualified).map(t=>t.g);
+  assignment = assignThirds(qualGroups);
+}
+
+/* Solve the slot<-group assignment as a bipartite perfect matching (dynamic MRV backtracking). */
+function assignThirds(qualGroups){
+  const slots = ELIG.map(s=>({m:s.m, allow:s.g.split(',')}));
+  const qset = new Set(qualGroups);
+  const used = new Set(), out = {};
+  function solve(remaining){
+    if(remaining.length===0) return true;
+    // pick slot with fewest current candidates (MRV); ties -> original order
+    let best=-1, bestC=null;
+    for(let i=0;i<remaining.length;i++){
+      const c = remaining[i].allow.filter(g=>qset.has(g) && !used.has(g));
+      if(bestC===null || c.length<bestC.length){ best=i; bestC=c; }
+    }
+    if(bestC.length===0) return false;
+    const slot = remaining[best];
+    const rest = remaining.filter((_,i)=>i!==best);
+    for(const g of bestC){
+      used.add(g); out[slot.m]=g;
+      if(solve(rest)) return true;
+      used.delete(g); delete out[slot.m];
+    }
+    return false;
+  }
+  return solve(slots) ? out : null;
+}
+
+/* ============================ render bracket ============================ */
+const br = document.getElementById('bracket');
+const allMatches = {};
+
+function slotHTML(slot){
+  let dot, main, tag='', host='', named=false;
+  if(slot.kind==='w'){
+    dot='w';
+    if(DATA && byGroup[slot.grp]){ main=esc(byGroup[slot.grp].w.n); tag='1st · '+slot.grp; named=true; }
+    else main='Winner Group '+slot.grp;
+    if(slot.host) host=`<span class="host">${slot.host}</span>`;
+  } else if(slot.kind==='r'){
+    dot='r';
+    if(DATA && byGroup[slot.grp]){ main=esc(byGroup[slot.grp].r.n); tag='2nd · '+slot.grp; named=true; }
+    else main='Runner-up Group '+slot.grp;
+  } else { // third
+    dot='t';
+    if(DATA){
+      const g = assignment && assignment[slot.m];
+      if(g && byGroup[g]){ main=esc(byGroup[g].t.n); tag='3rd · '+g; named=true; }
+      else { main='3rd place — TBD'; }
+    } else {
+      main='Best 3rd · '+slot.allow.join('/');
+    }
+  }
+  return `<div class="slot${named?' named':''}"><span class="dot ${dot}"></span>
+    <span class="lab">${main}${host}</span>${tag?`<span class="tag">${tag}</span>`:''}</div>`;
+}
+function feederHTML(f){
+  return `<div class="slot"><span class="dot w"></span><span class="lab">Winner Match ${f[0]}</span></div>
+          <div class="slot"><span class="dot w"></span><span class="lab">Winner Match ${f[1]}</span></div>`;
+}
+function matchBox(m,tag){
+  const el=document.createElement('div');
+  el.className='match'+(m.third?' third':'');
+  el.dataset.n=m.n;
+  const body = m.f ? feederHTML(m.f) : slotHTML(m.a)+`<div class="vs">vs</div>`+slotHTML(m.b);
+  el.innerHTML=`<div class="mno"><span>MATCH ${m.n}</span><span class="meta">${tag}</span></div>
+                ${body}<div class="meta" style="margin-top:4px">${m.date}</div>`;
+  allMatches[m.n]=el; return el;
+}
+function column(title,list,cls,tag){
+  const col=document.createElement('div'); col.className='round '+(cls||'');
+  col.innerHTML=`<div class="rhead">${title}</div>`;
+  const inner=document.createElement('div');
+  inner.style.cssText='display:flex;flex-direction:column;justify-content:space-around;flex:1';
+  list.forEach(m=>inner.appendChild(matchBox(m,tag)));
+  col.appendChild(inner); return col;
+}
+br.appendChild(column('Round of 32',R32,'','R32'));
+br.appendChild(column('Round of 16',R16,'','R16'));
+br.appendChild(column('Quarter-finals',QF,'','QF'));
+br.appendChild(column('Semi-finals',SF,'r-sf','SF'));
+br.appendChild(column('Final',FIN,'r-final','FINAL'));
+
+/* connector arrows */
+const svgNS='http://www.w3.org/2000/svg';
+function drawLinks(){
+  const old=br.querySelector('svg.links'); if(old) old.remove();
+  const svg=document.createElementNS(svgNS,'svg'); svg.setAttribute('class','links');
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L7,3 L0,6 Z" fill="#5b8bff"></path></marker>`;
+  svg.appendChild(defs);
+  const base=br.getBoundingClientRect();
+  [...R16,...QF,...SF,...FIN].forEach(parent=>{
+    const pEl=allMatches[parent.n]; if(!pEl) return;
+    const pr=pEl.getBoundingClientRect();
+    const px=pr.left-base.left, py=pr.top-base.top+pr.height/2;
+    parent.f.forEach(cn=>{
+      const cEl=allMatches[cn]; if(!cEl) return;
+      const cr=cEl.getBoundingClientRect();
+      const cx=cr.right-base.left, cy=cr.top-base.top+cr.height/2, midX=cx+(px-cx)/2;
+      const path=document.createElementNS(svgNS,'path');
+      path.setAttribute('d',`M ${cx} ${cy} H ${midX} V ${py} H ${px-2}`);
+      path.setAttribute('fill','none'); path.setAttribute('stroke','#3a4f7a');
+      path.setAttribute('stroke-width','1.6'); path.setAttribute('marker-end','url(#arw)');
+      svg.appendChild(path);
+    });
+  });
+  br.insertBefore(svg,br.firstChild);
+}
+window.addEventListener('load',drawLinks);
+window.addEventListener('resize',()=>{clearTimeout(window._t);window._t=setTimeout(drawLinks,120);});
+
+/* eligibility matrix */
+const cols="A,B,C,D,E,F,G,H,I,J,K,L".split(',');
+const eb=document.getElementById('eligbody');
+ELIG.forEach(row=>{
+  const elig=row.g.split(',');
+  let tds=`<td class="win">M${row.m} · Winner ${row.win}</td>`;
+  cols.forEach(c=>{
+    if(c===row.win) tds+=`<td class="own">—</td>`;
+    else if(elig.includes(c)) tds+=`<td class="y">✓</td>`;
+    else tds+=`<td></td>`;
+  });
+  eb.insertAdjacentHTML('beforeend',`<tr>${tds}</tr>`);
+});
+
+/* ============================ live-data banner + determination panel ============================ */
+if(DATA){
+  const maxP = Math.max(...DATA.flatMap(g=>g.teams.map(P)));
+  const provisional = maxP < 3;
+  const banner=document.getElementById('banner');
+  banner.className='show';
+  banner.innerHTML = `<b>Populated from your standings.</b> Group winners &amp; runners-up filled in, the 12 third-placed
+    teams ranked, and the <b>top 8</b> matched into the gold slots via the eligibility matrix.
+    ${provisional?'⚠ <b>Provisional</b> — not all groups have played 3 games yet, so the 3rd-place cut can still change.':''}
+    Knockout-round names stay as “Winner Match N” (those depend on results not yet played).`;
+
+  const det=document.getElementById('det'); det.className='show';
+  const groupToMatch={}; if(assignment) Object.entries(assignment).forEach(([m,g])=>groupToMatch[g]=+m);
+  let rows='';
+  ranked.forEach((t,i)=>{
+    if(i===8) rows+=`<tr class="divider"><td colspan="9"></td></tr>`;
+    let res;
+    if(t.qualified){
+      const m=groupToMatch[t.g];
+      if(m){ const wg=matchWinnerGrp[m]; res=`→ plays <b>${esc(byGroup[wg].w.n)}</b> <span style="color:#93a0b8">(Winner ${wg} · Match ${m})</span>`; }
+      else res='→ qualifies';
+    } else res='✕ eliminated';
+    rows+=`<tr class="${t.qualified?'qual':'cut'}">
+      <td>${i+1}</td><td>${t.g}</td><td class="tn">${esc(t.n)}</td>
+      <td>${P(t)}</td><td>${t.gf}</td><td>${t.ga}</td><td>${fmtGD(GD(t))}</td><td><b>${PTS(t)}</b></td>
+      <td class="res ${t.qualified?'st':''}">${res}</td></tr>`;
+  });
+  det.innerHTML = `<h2>3rd-place determination — from your current standings</h2>
+    <p>The 12 third-placed teams ranked together (Points → GD → Goals). Top 8 go to the Round of 32 and are slotted below;
+    bottom 4 are out.</p>
+    <table class="det"><thead><tr>
+      <th>#</th><th>Grp</th><th>3rd-placed team</th><th>Pld</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Result</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+</script>
+</body>
+</html>
