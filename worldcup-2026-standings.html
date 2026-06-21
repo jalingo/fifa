@@ -105,8 +105,10 @@
   <button onclick="saveState()">Save</button>
   <button class="ghost" onclick="deleteSaved()" title="Delete the saved scenario whose name is in the box">🗑</button>
   <span class="sep"></span>
-  <button class="brk" onclick="openBracket()">→ generate bracket with these standings</button>
+  <button onclick="startUpdate(true)" title="Fetch the latest scores now">⟳ Update</button>
   <span class="upd" id="upd"></span>
+  <span class="sep"></span>
+  <button class="brk" onclick="openBracket()">→ generate bracket with these standings</button>
   <span class="flash" id="flash"></span>
 </div>
 
@@ -152,7 +154,7 @@ const jset=(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} 
 let events = (()=>{ const a=jget(K_EVENTS,null); return (Array.isArray(a)&&a.length)?a:W.EVENTS; })();
 let saved  = jget(K_SAVED,{}) || {};
 let lastFetchMs = jget(K_FETCH,null);
-let state, view, cutoff, edited=false, updating=false, lastErrLong='';
+let state, view, cutoff, edited=false, updating=false, lastErrLong='', activeSaved=null;
 
 const curLabel = ()=>'Current — after '+fmtDate(W.latestDate(events));
 function applySnapshot(c,label){ state=buildState(c,events); cutoff=c; view=label; edited=false; render(); }
@@ -163,7 +165,7 @@ function onReset(val){
   if(val==='cur'){ applySnapshot('ALL',curLabel()); startUpdate(); }
   else if(val==='zero') applySnapshot('ZERO','Blank (pre-tournament)');
   else if(val.startsWith('date:')){ const d=val.slice(5); applySnapshot(d,'Results in through '+fmtDate(d)); }
-  else if(val.startsWith('saved:')){ const k=val.slice(6); if(Object.prototype.hasOwnProperty.call(saved,k)){ state=structuredClone(saved[k]); cutoff='SAVED'; view='Saved scenario: “'+k+'”'; edited=false; render(); } }
+  else if(val.startsWith('saved:')){ const k=val.slice(6); if(Object.prototype.hasOwnProperty.call(saved,k)){ state=structuredClone(saved[k]); cutoff='SAVED'; view='Saved scenario: “'+k+'”'; edited=false; activeSaved=k; document.getElementById('saveInput').value=k; render(); } }
   document.getElementById('resetSel').value='';
 }
 
@@ -176,9 +178,13 @@ function saveState(){
   saved[k]=structuredClone(state); jset(K_SAVED,saved); refreshSaved(); inp.value=''; flash('Saved “'+k+'”');
 }
 function deleteSaved(){
-  const inp=document.getElementById('saveInput'), k=inp.value.trim();
-  if(k && Object.prototype.hasOwnProperty.call(saved,k)){ delete saved[k]; jset(K_SAVED,saved); refreshSaved(); inp.value=''; flash('Deleted “'+k+'”'); }
-  else flash('No saved scenario named that',true);
+  const inp=document.getElementById('saveInput');
+  const k=(inp.value.trim()||activeSaved||'');          // box text, else the currently-loaded saved scenario
+  if(k && Object.prototype.hasOwnProperty.call(saved,k)){
+    delete saved[k]; jset(K_SAVED,saved); refreshSaved();
+    if(activeSaved===k) activeSaved=null;
+    inp.value=''; flash('Deleted “'+k+'”');
+  } else flash(k?('No scenario named “'+k+'”'):'Pick or name a scenario',true);
 }
 function refreshSaved(){
   const og=document.getElementById('savedOpts'), keys=Object.keys(saved);
@@ -206,14 +212,16 @@ function datesToFetch(serverIso){
   if(!serverIso) ds=ds.slice(0,2);
   return ds.slice(0,6);
 }
-async function startUpdate(){
+async function startUpdate(force){
   if(updating) return; updating=true;
   setUpd('checking');
   try{
     let serverMs=null;
     try{ serverMs=await W.getServerTimeMs(); }catch(e){ serverMs=null; }   // authoritative clock; optional
-    const guard=W.shouldFetch({serverNowMs:serverMs, lastFetchMs, latestResultDate:W.latestDate(events), scheduleDates:W.SCHEDULE_DATES, minIntervalMs:60000});
-    if(!guard.fetch){ setUpd('current',guardMsg(guard.reason)); updating=false; return; }
+    if(!force){                                                             // manual ⟳ Update bypasses the guard
+      const guard=W.shouldFetch({serverNowMs:serverMs, lastFetchMs, latestResultDate:W.latestDate(events), scheduleDates:W.SCHEDULE_DATES, minIntervalMs:60000});
+      if(!guard.fetch){ setUpd('current',guardMsg(guard.reason)); updating=false; return; }
+    }
     setUpd('fetching');
     const serverIso = serverMs ? new Date(serverMs).toISOString().slice(0,10) : null;
     const fetched=await W.withRetry(()=>W.fetchResults(datesToFetch(serverIso)), {retries:2, baseDelay:600});
@@ -330,7 +338,7 @@ function openBracket(){
 }
 
 /* expose handlers used by inline onclick/onchange */
-Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr});
+Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr,startUpdate});
 
 /* ---------- init ---------- */
 buildDateOptions(); refreshSaved(); applySnapshot('ALL',curLabel()); setUpd('idle');
