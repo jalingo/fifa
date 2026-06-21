@@ -137,6 +137,20 @@ test('mergeEvents detects adds, updates, and no-ops', () => {
   assert.equal(upd.updated, 1); assert.equal(upd.changed, true); assert.equal(upd.events.length, 1);
 });
 
+test('unlockedDates: hides the future, reveals arrived days, safe fallback', () => {
+  // with an authoritative clock of Jun 21, Jun 21 is unlocked but Jun 22+ is not
+  const u = WC.unlockedDates(Date.parse('2026-06-21T12:00:00Z'));
+  assert.ok(u.includes('2026-06-21'), 'today unlocked');
+  assert.ok(!u.includes('2026-06-22'), 'tomorrow hidden');
+  assert.ok(!u.includes('2026-06-27'), 'far future hidden');
+  // no server time -> fall back to latest PLAYED date (2026-06-20); never reveal scheduled-only days
+  const f = WC.unlockedDates(null);
+  assert.ok(f.includes('2026-06-20'));
+  assert.ok(!f.includes('2026-06-21'), 'no clock -> scheduled day stays hidden');
+  // every match day is known across results + fixtures (full group stage)
+  assert.equal(WC.allMatchDates().length, 17);
+});
+
 test('shouldFetch guard: throttle / no-new-games / due / no-more-matches', () => {
   const base = { latestResultDate: '2026-06-20', minIntervalMs: 60000 };
   // throttled: fetched 1s ago

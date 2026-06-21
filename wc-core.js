@@ -69,6 +69,46 @@
     "2026-06-17","2026-06-18","2026-06-19","2026-06-20","2026-06-21","2026-06-22",
     "2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-27",
   ];
+  // scheduled group-stage fixtures not yet played (no scores) — drive date-unlocking + "upcoming" display.
+  // NEVER fed to buildState (scoreless), so they don't affect standings.
+  const FIXTURES = [
+    {d:"2026-06-21",g:"G",h:"Belgium",a:"Iran"},
+    {d:"2026-06-21",g:"G",h:"New Zealand",a:"Egypt"},
+    {d:"2026-06-21",g:"H",h:"Uruguay",a:"Cape Verde"},
+    {d:"2026-06-21",g:"H",h:"Spain",a:"Saudi Arabia"},
+    {d:"2026-06-22",g:"I",h:"France",a:"Iraq"},
+    {d:"2026-06-22",g:"I",h:"Norway",a:"Senegal"},
+    {d:"2026-06-22",g:"J",h:"Argentina",a:"Austria"},
+    {d:"2026-06-22",g:"J",h:"Jordan",a:"Algeria"},
+    {d:"2026-06-23",g:"K",h:"Portugal",a:"Uzbekistan"},
+    {d:"2026-06-23",g:"K",h:"Colombia",a:"DR Congo"},
+    {d:"2026-06-23",g:"L",h:"England",a:"Ghana"},
+    {d:"2026-06-23",g:"L",h:"Panama",a:"Croatia"},
+    {d:"2026-06-24",g:"A",h:"Czechia",a:"Mexico"},
+    {d:"2026-06-24",g:"A",h:"South Africa",a:"South Korea"},
+    {d:"2026-06-24",g:"B",h:"Switzerland",a:"Canada"},
+    {d:"2026-06-24",g:"B",h:"Bosnia & Herz.",a:"Qatar"},
+    {d:"2026-06-24",g:"C",h:"Scotland",a:"Brazil"},
+    {d:"2026-06-24",g:"C",h:"Morocco",a:"Haiti"},
+    {d:"2026-06-25",g:"D",h:"Türkiye",a:"United States"},
+    {d:"2026-06-25",g:"D",h:"Paraguay",a:"Australia"},
+    {d:"2026-06-25",g:"E",h:"Curaçao",a:"Ivory Coast"},
+    {d:"2026-06-25",g:"E",h:"Ecuador",a:"Germany"},
+    {d:"2026-06-25",g:"F",h:"Japan",a:"Sweden"},
+    {d:"2026-06-25",g:"F",h:"Tunisia",a:"Netherlands"},
+    {d:"2026-06-26",g:"G",h:"Egypt",a:"Iran"},
+    {d:"2026-06-26",g:"G",h:"New Zealand",a:"Belgium"},
+    {d:"2026-06-26",g:"H",h:"Cape Verde",a:"Saudi Arabia"},
+    {d:"2026-06-26",g:"H",h:"Uruguay",a:"Spain"},
+    {d:"2026-06-26",g:"I",h:"Norway",a:"France"},
+    {d:"2026-06-26",g:"I",h:"Senegal",a:"Iraq"},
+    {d:"2026-06-27",g:"J",h:"Algeria",a:"Austria"},
+    {d:"2026-06-27",g:"J",h:"Jordan",a:"Argentina"},
+    {d:"2026-06-27",g:"K",h:"Colombia",a:"Portugal"},
+    {d:"2026-06-27",g:"K",h:"DR Congo",a:"Uzbekistan"},
+    {d:"2026-06-27",g:"L",h:"Panama",a:"England"},
+    {d:"2026-06-27",g:"L",h:"Croatia",a:"Ghana"},
+  ];
 
   /* ===================== misc ===================== */
   // escape for safe insertion into HTML text OR double/single-quoted attributes (XSS guard for
@@ -221,6 +261,22 @@
   const isoToYmd = iso => String(iso).slice(0, 10).replace(/-/g, '');
   const latestDate = events => (events && events.length ? events.reduce((m, e) => (e.d > m ? e.d : m), events[0].d) : null);
 
+  // every distinct match day across played results + scheduled fixtures
+  const allMatchDates = (events, fixtures) => {
+    const s = new Set();
+    (events || EVENTS).forEach(e => s.add(e.d));
+    (fixtures || FIXTURES).forEach(f => s.add(f.d));
+    return [...s].sort();
+  };
+  // match days that have "arrived" per the authoritative clock (ms). With no server time, fall back to the
+  // latest PLAYED date so the future is never revealed. As real time advances, more days unlock automatically.
+  const unlockedDates = (serverNowMs, events, fixtures) => {
+    const cutoff = (serverNowMs != null)
+      ? new Date(serverNowMs).toISOString().slice(0, 10)
+      : (latestDate(events || EVENTS) || '');
+    return allMatchDates(events, fixtures).filter(d => d <= cutoff);
+  };
+
   // decide whether a network fetch is worthwhile. Uses authoritative server time (ms), NOT local clock.
   function shouldFetch(opts) {
     const { serverNowMs, lastFetchMs, latestResultDate, scheduleDates, minIntervalMs } = opts || {};
@@ -303,11 +359,11 @@
   }
 
   return {
-    VERSION, TEAMS, EVENTS, SCHEDULE_DATES, esc,
+    VERSION, TEAMS, EVENTS, SCHEDULE_DATES, FIXTURES, esc,
     num, P, GD, PTS, fmtGD, cmp, sortGroups, buildState,
     ELIG, matchWinnerGrp, rankThirds, assignThirds,
     NAME_ALIASES, normalizeTeam, teamGroup, parseScoreboard, eventKey, mergeEvents,
-    isoToYmd, latestDate, shouldFetch, formatError, nextBackoff, withRetry,
+    isoToYmd, latestDate, allMatchDates, unlockedDates, shouldFetch, formatError, nextBackoff, withRetry,
     TIME_URL, ESPN_URL, httpJson, getServerTimeMs, fetchResults,
   };
 });

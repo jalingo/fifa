@@ -155,7 +155,7 @@ const jset=(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} 
 let events = (()=>{ const a=jget(K_EVENTS,null); return (Array.isArray(a)&&a.length)?a:W.EVENTS; })();
 let saved  = jget(K_SAVED,{}) || {};
 let lastFetchMs = jget(K_FETCH,null);
-let state, view, cutoff, edited=false, updating=false, lastErrLong='', activeSaved=null;
+let state, view, cutoff, edited=false, updating=false, lastErrLong='', activeSaved=null, serverNowMs=null;
 
 const curLabel = ()=>'Current — after '+fmtDate(W.latestDate(events));
 function applySnapshot(c,label){ state=buildState(c,events); cutoff=c; view=label; edited=false; render(); }
@@ -227,7 +227,7 @@ async function startUpdate(force){
     const serverIso = serverMs ? new Date(serverMs).toISOString().slice(0,10) : null;
     const fetched=await W.withRetry(()=>W.fetchResults(datesToFetch(serverIso)), {retries:2, baseDelay:600});
     const merged=W.mergeEvents(events,fetched);
-    if(serverMs){ lastFetchMs=serverMs; jset(K_FETCH,serverMs); }            // never store local clock
+    if(serverMs){ lastFetchMs=serverMs; serverNowMs=serverMs; jset(K_FETCH,serverMs); buildDateOptions(); }  // store clock + unlock arrived days
     if(merged.changed){
       events=merged.events; jset(K_EVENTS,events); buildDateOptions();
       setUpd('updated', merged.added+merged.updated);
@@ -318,17 +318,28 @@ function renderStatus(){
   document.getElementById('view').textContent=view+(edited?'  ·  edited':'');
   const evEl=document.getElementById('events');
   if(cutoff==='ZERO'||cutoff==='SAVED'){ evEl.textContent=''; return; }
-  const cut = cutoff==='ALL' ? '9999-99-99' : cutoff;
-  const days=[...new Set(events.map(e=>e.d))].sort().filter(d=>d<=cut);
-  const newest=days[days.length-1];
-  if(!newest){ evEl.textContent=''; return; }
-  const ms=events.filter(e=>e.d===newest).map(m=>`${esc(m.h)} ${W.num(m.hs)}–${W.num(m.as)} ${esc(m.a)}`);
-  evEl.innerHTML=`<b>Results on ${esc(fmtDate(newest))}:</b> `+ms.join('   ·   ');
+  const focus = cutoff==='ALL' ? W.latestDate(events) : cutoff;   // newest results, or the selected day
+  if(!focus){ evEl.textContent=''; return; }
+  const played=events.filter(e=>e.d===focus);
+  if(played.length){
+    evEl.innerHTML=`<b>Results on ${esc(fmtDate(focus))}:</b> `+played.map(m=>`${esc(m.h)} ${W.num(m.hs)}–${W.num(m.as)} ${esc(m.a)}`).join('   ·   ');
+  } else {
+    const sched=W.FIXTURES.filter(f=>f.d===focus);
+    evEl.innerHTML = sched.length ? `<b>Scheduled ${esc(fmtDate(focus))}:</b> `+sched.map(m=>`${esc(m.h)} v ${esc(m.a)}`).join('   ·   ') : '';
+  }
 }
 function buildDateOptions(){
-  const dates=[...new Set(events.map(e=>e.d))].sort();
-  document.getElementById('dateOpts').innerHTML =
-    dates.map(d=>{ const n=events.filter(e=>e.d===d).length; return `<option value="date:${esc(d)}">${esc(fmtDate(d))} — ${n} match${n>1?'es':''}</option>`; }).join('');
+  const dates=W.unlockedDates(serverNowMs, events);   // only days that have arrived (web clock); future stays hidden
+  document.getElementById('dateOpts').innerHTML = dates.map(d=>{
+    const keys=new Set();
+    events.filter(e=>e.d===d).forEach(e=>keys.add([e.h,e.a].slice().sort().join('~')));
+    W.FIXTURES.filter(f=>f.d===d).forEach(f=>keys.add([f.h,f.a].slice().sort().join('~')));
+    const n=keys.size;
+    return `<option value="date:${esc(d)}">${esc(fmtDate(d))} — ${n} match${n>1?'es':''}</option>`;
+  }).join('');
+}
+async function initClock(){   // unlock days by the authoritative clock; silent fallback keeps the future hidden
+  try{ serverNowMs=await W.getServerTimeMs(); buildDateOptions(); }catch(e){}
 }
 
 /* hand the (sorted) standings to the bracket page via the URL hash */
@@ -342,7 +353,7 @@ function openBracket(){
 Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr,startUpdate});
 
 /* ---------- init ---------- */
-buildDateOptions(); refreshSaved(); applySnapshot('ALL',curLabel()); setUpd('idle');
+buildDateOptions(); refreshSaved(); applySnapshot('ALL',curLabel()); setUpd('idle'); initClock();
 }
 </script>
 </body>
