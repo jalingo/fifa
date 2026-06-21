@@ -37,6 +37,9 @@
 
   #statusbar{padding:2px 26px 4px;color:var(--muted);font-size:12px;display:flex;gap:8px 20px;flex-wrap:wrap;align-items:baseline}
   #statusbar b{color:#cdd6e6} #view{font-weight:700;color:#cdd6e6}
+  #sharebanner{display:none;margin:0 26px 6px;padding:8px 12px;border-radius:8px;background:#10261a;
+    border:1px solid #1f5a3a;color:#cfeede;font-size:12.5px;align-items:center;gap:10px}
+  #sharebanner.show{display:flex} #sharebanner button{padding:5px 10px}
   .abbr{padding:2px 26px 6px;color:var(--muted);font-size:11.5px;display:flex;flex-wrap:wrap;gap:3px 14px}
   .abbr span b{color:#cdd6e6;font-weight:700}
   .legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:12px;padding:2px 26px 6px}
@@ -111,7 +114,9 @@
 </div>
 <div class="bar" style="padding-top:0">
   <button class="brk" onclick="openBracket()">→ generate bracket with these standings</button>
+  <button onclick="shareState()" title="Copy a link that loads these exact standings">🔗 Share</button>
 </div>
+<div id="sharebanner">👁 Viewing shared standings from a link. <button onclick="revertShare()">Reset to current results</button></div>
 
 <div id="statusbar">
   <span>Showing: <span id="view">—</span></span>
@@ -317,7 +322,7 @@ function renderRace(){
 function renderStatus(){
   document.getElementById('view').textContent=view+(edited?'  ·  edited':'');
   const evEl=document.getElementById('events');
-  if(cutoff==='ZERO'||cutoff==='SAVED'){ evEl.textContent=''; return; }
+  if(cutoff==='ZERO'||cutoff==='SAVED'||cutoff==='SHARED'){ evEl.textContent=''; return; }
   const focus = cutoff==='ALL' ? W.latestDate(events) : cutoff;   // newest results, or the selected day
   if(!focus){ evEl.textContent=''; return; }
   const played=events.filter(e=>e.d===focus);
@@ -349,11 +354,25 @@ function openBracket(){
   const win=window.open(url,'_blank'); if(!win) location.href=url;
 }
 
+/* share: encode the current standings into a link others can open */
+function shareState(){
+  const url=location.href.split('#')[0]+'#s='+W.encodeState(state);
+  if(navigator.share){ navigator.share({title:'2026 World Cup — shared standings',url:url}).then(function(){flash('shared');}).catch(function(){copyText(url);flash('link copied');}); }
+  else { copyText(url); flash('link copied'); }
+}
+function revertShare(){ document.getElementById('sharebanner').classList.remove('show'); applySnapshot('ALL',curLabel()); }
+
 /* expose handlers used by inline onclick/onchange */
-Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr,startUpdate});
+Object.assign(window,{onReset,saveState,deleteSaved,openBracket,copyErr,startUpdate,shareState,revertShare});
 
 /* ---------- init ---------- */
-buildDateOptions(); refreshSaved(); applySnapshot('ALL',curLabel()); setUpd('idle'); initClock();
+buildDateOptions(); refreshSaved();
+var sharedPayload=(location.hash.match(/[#&]s=([^&]*)/)||[])[1];
+var sharedState=sharedPayload ? W.decodeState(sharedPayload) : null;
+if(sharedState){ state=sharedState; cutoff='SHARED'; view='Shared standings (from link)'; edited=false;
+  document.getElementById('sharebanner').classList.add('show'); render(); }
+else { applySnapshot('ALL',curLabel()); }
+setUpd('idle'); initClock();
 }
 </script>
 </body>

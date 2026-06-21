@@ -91,6 +91,26 @@ test('assignThirds: every C(12,8) subset admits a valid matching (full Annex-C c
   assert.equal(ok, 495); // FIFA's matrix guarantees a valid slotting for any combination
 });
 
+/* ---------------- shareable state encoding ---------------- */
+test('encodeState/decodeState round-trips numbers + renames, URL-safe & compact', () => {
+  const st = WC.sortGroups(WC.buildState('ALL'));
+  const mex = st.find(g => g.g === 'A').teams.find(t => t.n === 'Mexico'); mex.w = 3; mex.gf = 9; mex.p = 3;
+  st.find(g => g.g === 'C').teams[0].n = 'Brasil';   // a rename
+  const payload = WC.encodeState(st);
+  assert.ok(!/[#&=\s]/.test(payload.split('~')[1]), 'numbers section is URL-safe');
+  assert.ok(payload.length < 1500, 'payload stays short (' + payload.length + ' chars)');
+  const back = WC.decodeState(payload);
+  const bMex = back.find(g => g.g === 'A').teams.find(t => t.i === mex.i);
+  assert.deepEqual([bMex.w, bMex.gf, bMex.p], [3, 9, 3]);
+  assert.equal(back.find(g => g.g === 'C').teams.find(t => t.i === 0).n, 'Brasil');
+});
+test('decodeState rejects malformed / wrong-version payloads', () => {
+  assert.equal(WC.decodeState('nope'), null);
+  assert.equal(WC.decodeState('2~x~'), null);          // bad version
+  assert.equal(WC.decodeState('1~only.one.group~'), null);  // wrong group count
+  assert.equal(WC.decodeState(''), null);
+});
+
 /* ---------------- live-update helpers ---------------- */
 test('normalizeTeam maps aliases and rejects unknowns', () => {
   assert.equal(WC.normalizeTeam('Turkey'), 'Türkiye');

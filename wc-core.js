@@ -130,7 +130,7 @@
   function buildState(cutoff, events, teams) {
     events = events || EVENTS;
     teams = teams || TEAMS;
-    const st = teams.map(grp => ({ g: grp.g, teams: grp.teams.map(t => ({ n: t.n, host: t.host, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 })) }));
+    const st = teams.map(grp => ({ g: grp.g, teams: grp.teams.map((t, i) => ({ n: t.n, host: t.host, i, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 })) }));
     if (cutoff === 'ZERO') return st;
     const idx = {};
     st.forEach(grp => grp.teams.forEach(t => { idx[grp.g + '|' + t.n] = t; }));
@@ -189,6 +189,48 @@
       return false;
     }
     return solve(slots) ? out : null;
+  }
+
+  /* ===================== shareable state encoding (compact, positional, versioned) ===================== */
+  // state -> URL-safe string. Stats are positional by canonical team order, so names aren't sent unless renamed.
+  // Typical link is a few hundred chars; self-contained (no dependence on the recipient's local data).
+  function encodeState(state) {
+    const order = grp => grp.teams.slice().sort((a, b) => ((a.i != null ? a.i : 0) - (b.i != null ? b.i : 0)));
+    const nums = (state || []).map(grp =>
+      order(grp).map(t => [num(t.p), num(t.w), num(t.d), num(t.l), num(t.gf), num(t.ga)].join('.')).join('-')
+    ).join('_');
+    const ov = [];
+    (state || []).forEach((grp, gi) => {
+      const base = TEAMS[gi]; if (!base) return;
+      order(grp).forEach((t, i) => { const canon = base.teams[i] && base.teams[i].n; if (canon && t.n !== canon) ov.push([grp.g, i, String(t.n).slice(0, 40)]); });
+    });
+    return '1~' + nums + '~' + (ov.length ? encodeURIComponent(JSON.stringify(ov)) : '');
+  }
+  // URL-safe string -> state, rebuilt from the canonical base + decoded numbers. Returns null if malformed.
+  function decodeState(payload) {
+    try {
+      const parts = String(payload).split('~');
+      if (parts[0] !== '1') return null;
+      const groups = parts[1].split('_');
+      if (groups.length !== TEAMS.length) return null;
+      const st = TEAMS.map((grp, gi) => {
+        const cells = groups[gi].split('-');
+        if (cells.length !== grp.teams.length) throw new Error('group shape');
+        return { g: grp.g, teams: grp.teams.map((ct, i) => {
+          const v = cells[i].split('.');
+          if (v.length !== 6) throw new Error('team shape');
+          return { n: ct.n, host: ct.host, i, p: num(v[0]), w: num(v[1]), d: num(v[2]), l: num(v[3]), gf: num(v[4]), ga: num(v[5]) };
+        }) };
+      });
+      if (parts[2]) {
+        const ov = JSON.parse(decodeURIComponent(parts[2]));
+        if (Array.isArray(ov)) ov.forEach(o => {
+          const gi = TEAMS.findIndex(x => x.g === o[0]), i = o[1];
+          if (gi >= 0 && st[gi].teams[i] && typeof o[2] === 'string') st[gi].teams[i].n = o[2].slice(0, 40);
+        });
+      }
+      return st;
+    } catch (e) { return null; }
   }
 
   /* ===================== live-update helpers (pure / injectable) ===================== */
@@ -362,6 +404,7 @@
     VERSION, TEAMS, EVENTS, SCHEDULE_DATES, FIXTURES, esc,
     num, P, GD, PTS, fmtGD, cmp, sortGroups, buildState,
     ELIG, matchWinnerGrp, rankThirds, assignThirds,
+    encodeState, decodeState,
     NAME_ALIASES, normalizeTeam, teamGroup, parseScoreboard, eventKey, mergeEvents,
     isoToYmd, latestDate, allMatchDates, unlockedDates, shouldFetch, formatError, nextBackoff, withRetry,
     TIME_URL, ESPN_URL, httpJson, getServerTimeMs, fetchResults,
