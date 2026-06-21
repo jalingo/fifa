@@ -42,7 +42,17 @@
         <div class="go">Open bracket →</div>
       </a>
     </div>
-    <footer>Static site · no tracking · <a href="https://github.com/jalingo/fifa">source on GitHub</a></footer>
+    <footer><span id="hits"></span><a href="https://github.com/jalingo/fifa">source on GitHub</a></footer>
   </div>
+  <script>
+  /* lightweight page-view counter (counterapi.dev). Fails silent if unavailable. */
+  (function(){
+    var el=document.getElementById('hits'); if(!el) return;
+    fetch('https://api.counterapi.dev/v1/jalingo_fifa/home/up',{cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(j){ if(j && typeof j.count==='number') el.textContent='👁 '+j.count.toLocaleString()+' page views  ·  '; })
+      .catch(function(){ /* counter unavailable — leave the footer clean */ });
+  })();
+  </script>
 </body>
 </html>
