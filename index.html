@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 World Cup — Bracket & Standings Simulator</title>
+<style>
+  :root{ --bg:#0f1420; --ink:#e8edf6; --muted:#93a0b8; --card:#1b2438; --border:#2a3550; --q1:#19b562; --q2:#2f6df6; }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#16223a,#0f1420);
+    color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:30px}
+  .wrap{max-width:760px;width:100%}
+  h1{font-size:28px;margin:0 0 6px} .tag{color:var(--muted);font-size:14px;margin:0 0 26px;max-width:620px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:620px){.cards{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:20px;transition:transform .12s,border-color .12s}
+  a.card:hover{transform:translateY(-2px)}
+  a.card.s:hover{border-color:var(--q2)} a.card.b:hover{border-color:var(--q1)}
+  .card h2{margin:0 0 6px;font-size:18px} .card p{margin:0;color:var(--muted);font-size:13px}
+  .card .go{margin-top:14px;font-weight:700;font-size:13px}
+  .card.s .go{color:#7faaff} .card.b .go{color:#5fd6a0}
+  footer{color:var(--muted);font-size:12px;margin-top:26px}
+  footer a{color:#5b8bff}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>⚽ World Cup 2026 — Bracket &amp; Standings</h1>
+    <p class="tag">A zero-build simulator for the first 48-team World Cup. Edit the group tables and watch the
+    knockout bracket — including the eight best third-placed teams — fall into place.</p>
+    <div class="cards">
+      <a class="card s" href="worldcup-2026-standings.html">
+        <h2>Group Standings</h2>
+        <p>Editable simulator. Jump to any dated snapshot, fetch live scores, save scenarios.</p>
+        <div class="go">Open simulator →</div>
+      </a>
+      <a class="card b" href="worldcup-2026-bracket.html">
+        <h2>Knockout Bracket</h2>
+        <p>Round of 32 → Final with the third-place eligibility matrix and matching solver.</p>
+        <div class="go">Open bracket →</div>
+      </a>
+    </div>
+    <footer>Static site · no tracking · <a href="https://github.com/jalingo/fifa">source on GitHub</a></footer>
+  </div>
+</body>
+</html>
